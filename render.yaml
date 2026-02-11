@@ -1,0 +1,10 @@
+services:
+  - type: worker
+    name: thepopebot
+    env: docker
+    plan: starter
+    region: oregon
+    dockerCommand: ./entrypoint.sh
+    envVars:
+      - key: SECRETS
+        sync: false

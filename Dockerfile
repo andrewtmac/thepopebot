@@ -5,6 +5,8 @@ RUN apt-get update && apt-get install -y \
     jq \
     curl \
     procps \
+    openssh-server \
+    sudo \
     # Chrome/Chromium dependencies
     libnss3 \
     libnspr4 \

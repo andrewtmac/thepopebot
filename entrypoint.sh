@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+# Start SSH if installed
+if command -v service >/dev/null 2>&1 && [ -f /etc/init.d/ssh ]; then
+    sudo service ssh start || echo "Failed to start SSH"
+fi
+
 # Extract job ID from branch name (job/uuid -> uuid), fallback to random UUID
 if [[ "$BRANCH" == job/* ]]; then
     JOB_ID="${BRANCH#job/}"
@@ -21,6 +26,11 @@ if [ -n "$SECRETS" ]; then
     SECRETS_JSON=$(echo "$SECRETS" | base64 -d)
     eval $(echo "$SECRETS_JSON" | jq -r 'to_entries | .[] | "export \(.key)=\"\(.value)\""')
     export SECRETS="$SECRETS_JSON"  # Keep decoded for extension to parse
+fi
+
+# Authenticate gh if token is present
+if [ -n "$GH_TOKEN" ]; then
+    echo "$GH_TOKEN" | gh auth login --with-token
 fi
 
 # Export LLM_SECRETS (base64 JSON) as flat env vars
@@ -98,3 +108,7 @@ gh pr create --title "thepopebot: job ${JOB_ID}" --body "Automated job" --base m
 # Cleanup
 kill $CHROME_PID 2>/dev/null || true
 echo "Done. Job ID: ${JOB_ID}"
+
+# Keep alive for connecting
+echo "Usage finished. Keeping container alive for debugging/SSH..."
+sleep infinity
