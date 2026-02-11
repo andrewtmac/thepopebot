@@ -1,0 +1,1 @@
+Audit the current skills available in the thepopebot repository. Check the `.pi/skills/` directory and any other skill locations, list what skills are currently installed, provide a summary of their capabilities, and identify any missing dependencies or setup requirements.
